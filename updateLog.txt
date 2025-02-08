@@ -1,0 +1,3 @@
+ver 0802251302, 2/8/2025 1:02PM
+	-transparent option in tile selector displays as transparent texture
+	-added scaling
