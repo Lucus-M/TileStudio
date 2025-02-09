@@ -1,181 +1,150 @@
+//tile selector menu
 let tileSelector = document.getElementById("tileSelector");
 
+//get canvas ctx
+let cvs = document.getElementById("mainCanvas");
+let ctx = cvs.getContext("2d");
+
+//pixel size of tiles
 let tileSize = {
-    x: 16,
-    y: 16
+    x: 16, //length 
+    y: 16 //height
 }
 
-let scale = 1;
+let scale = 1; //zoom scale
 
-let numOfTiles = 3;
-let tileSelectorArray = new Array(numOfTiles);
-let selectedTile = 0;
+let tileSelectorArray = []; //array of selectable tiles, contains image and DOM element
+let selectedTile = 0; //index of the tile that the user has selected
 
-let tileImages = new Array(numOfTiles);
-let tileImgSrcs = new Array(numOfTiles);
+let ctxMenuAllowed = false; //whether the user can open the context menu in canvas or not
 
-let cvs = document.getElementById("mainCanvas");
+let tileArray,      // 2d array of tiles
+    tileX,          // horizontal tile index for selected tile
+    tileY,          // vertical tile index for selected tile
 
-//cvs.getContext("2d").imageSmoothingEnabled = false;
-
-let ctx = cvs.getContext("2d");
-let cvsx;
-let cvsy;
-
-
-resize();
-
+    clicking,       // if the user is left clicking (boolean)
+    rightClicking;  // if the user is right clicking (boolean)
+    
+//resize canvas based on user's screen dimensions
 function resize(){
+
+    //cet canvas container element's dimensions
     let containerWidth = document.getElementById("canvasContainer").offsetWidth;
     let containerHeight = document.getElementById("canvasContainer").offsetHeight;
 
-    //console.log(containerWidth);
-    //console.log(containerHeight);
-
+    //set canvas width to however many full tiles can fit within the canvas container
     cvs.width = containerWidth - (containerWidth % tileSize.x);
     cvs.height = containerHeight - (containerHeight % tileSize.y);
-
-    //console.log(cvs.width);
-    //console.log(cvs.height);
-
-    cvsy = cvs.getBoundingClientRect().y;
-    cvsx = cvs.getBoundingClientRect().x;
-
-    //console.log(`CvsY: ${cvsy}, CvsX: ${cvsx}`);
 }
 
-
-
-function select(i){
-    tileSelectorArray[selectedTile].element.classList.remove("selected");
-    tileSelectorArray[i].element.classList.add("selected");
-
-    selectedTile = i;
-}
-
-for(let i = 0; i < numOfTiles; i++){
-    tileSelectorArray[i] = {
-        element: null,
-        img: null,
-    }
-
-    tileSelectorArray[i].element = document.createElement("div");
-    tileSelectorArray[i].element.classList.add("tile");
-    if(i == selectedTile){
-        tileSelectorArray[i].element.classList.add("selected");
-    }
-
-    tileSelectorArray[i].element.addEventListener("click", function(){
-        select(i);
-    });
-
-    tileSelectorArray[i].img = new Image();
-
-    if(i == 0){
-        tileSelectorArray[i].img.src = "sampleImgs/transparentbg.png";
-    }
-    else if(i % 2 == 0){
-        tileSelectorArray[i].img.src = "sampleImgs/tile1.png";
-    }
-    else{
-        tileSelectorArray[i].img.src = "sampleImgs/tile2.png";
-    }
-
-    console
-
-    tileSelectorArray[i].element.innerHTML = "<img src='" + tileSelectorArray[i].img.src + "'>";
-
-    tileSelector.appendChild(tileSelectorArray[i].element);
-}
-
-
-let tileArray = new Array(cvs.height / tileSize.y);
-
-for(let y = 0; y < tileArray.length; y++){
-    tileArray[y] = new Array(cvs.width / tileSize.x); 
-    for(let x = 0; x < tileArray[y].length; x++){
-        tileArray[y][x] = 0;
+//initialize tile array after creating new canvas
+function createCanvas(){
+    //loop through 2d array
+    for(let iy = 0; iy < tileArray.length; iy++){
+        tileArray[iy] = new Array(cvs.width / tileSize.x); //create row (however many tiles can fit into canvas width)
+        for(let ix = 0; ix < tileArray[iy].length; ix++){
+            tileArray[iy][ix] = 0; //initialize tile to 0 (transparent)
+        }
     }
 }
 
-function rescale(){
-    cvs.width = (tileSize.x * scale) * tileArray[0].length;
-    cvs.height = (tileSize.y * scale) * tileArray.length;
-    
-    document.getElementById("scaleDisplay").innerText = "Scale = " + scale.toFixed(1);
-
-    redrawCanvas();
-}
-
-console.log(tileArray);
-
-console.log(`CvsY: ${cvsy}, CvsX: ${cvsx}`);
-
+//clear and redraw canvas
 function redrawCanvas(){
-    ctx.imageSmoothingEnabled = false;
-
-    ctx.clearRect(0, 0, cvs.width, cvs.height);
+    ctx.imageSmoothingEnabled = false; //prevent lower res images from becoming blurry when scaled up
+    ctx.clearRect(0, 0, cvs.width, cvs.height); //clear canvas
     
-    for(let y = 0; y < tileArray.length; y++){
-        for(let x = 0; x < tileArray[y].length; x++){
-            if(tileArray[y][x] != 0){
-                ctx.drawImage(tileSelectorArray[tileArray[y][x]].img, (x*tileSize.x) * scale, (y*tileSize.y) * scale, tileSize.x*scale, tileSize.y*scale);
+    //loop through 2d array
+    for(let iy = 0; iy < tileArray.length; iy++){
+        for(let ix = 0; ix < tileArray[iy].length; ix++){
+            //0 is transparent
+            if(tileArray[iy][ix] != 0){
+                //draw tile images             
+                ctx.drawImage(tileSelectorArray[tileArray[iy][ix]].img, (ix*tileSize.x) * scale, (iy*tileSize.y) * scale, tileSize.x*scale, tileSize.y*scale);
             }
         }
     }
 }
 
-let X, y, tileX, tileY, clicking;
+function rescale(){
+    //resize canvas element based on scale variable
+    cvs.width = (tileSize.x * scale) * tileArray[0].length;
+    cvs.height = (tileSize.y * scale) * tileArray.length;
+    
+    //update scale display
+    document.getElementById("scaleDisplay").innerText = "Scale = " + scale.toFixed(1);
+    redrawCanvas();
+}
 
 function updateMousePos(event){
-    cvsy = cvs.getBoundingClientRect().y;
-    cvsx = cvs.getBoundingClientRect().x;
+    const cvsy = cvs.getBoundingClientRect().y;
+    const cvsx = cvs.getBoundingClientRect().x;
 
-    x = event.clientX;
-    y = event.clientY;
+    const x = event.clientX;
+    const y = event.clientY;
 
     tileX = Math.floor((x-cvsx)/(tileSize.x*scale));
     tileY = Math.floor((y-cvsy)/(tileSize.x*scale));
-
-    console.log(cvs.getBoundingClientRect().x);
-    console.log(cvs.getBoundingClientRect().y);
 }
 
-function updateTile(ty, tx){
-    tileArray[ty][tx] = selectedTile;
+function updateTile(ty, tx, tileNum){
+    tileArray[ty][tx] = tileNum;
 }
 
 cvs.addEventListener('mousemove', (event) => {
-    
+    const prevtileY = tileY;
+    const prevtileX = tileX;
+
     updateMousePos(event);
 
-    if(clicking){
-        updateTile(tileY, tileX);
+    if(!((prevtileX === tileX) && (prevtileY === tileY))){
+        console.log(tileX + " " + tileY);
+
+        //click and drag draw
+        if(clicking){
+            updateTile(tileY, tileX, selectedTile);
+        }
+        else if(rightClicking){
+            updateTile(tileY, tileX, 0);
+        }
+    
+        redrawCanvas();
+    
+        //cursor
+        if(selectedTile != 0){
+            ctx.drawImage(tileSelectorArray[selectedTile].img, tileX*tileSize.x*scale, tileY*tileSize.y*scale, tileSize.x*scale, tileSize.y*scale);
+        }
+    
+        ctx.beginPath();
+        ctx.strokeStyle = "white";
+        ctx.rect(tileX*tileSize.x*scale, tileY*tileSize.y*scale, tileSize.x*scale, tileSize.y*scale);
+        ctx.stroke();
     }
-
-    redrawCanvas();
-
-    //cursor
-    if(selectedTile != 0){
-        ctx.drawImage(tileSelectorArray[selectedTile].img, tileX*tileSize.x*scale, tileY*tileSize.y*scale, tileSize.x*scale, tileSize.y*scale);
-    }
-
-    ctx.beginPath();
-    ctx.strokeStyle = "white";
-    ctx.rect(tileX*tileSize.x*scale, tileY*tileSize.y*scale, tileSize.x*scale, tileSize.y*scale);
-    ctx.stroke();
-    //console.log(`Mouse X: ${tileX}, Mouse Y: ${tileY}`);
 });
 
 cvs.addEventListener('mousedown', (event) => {
-    clicking = true;
-    updateTile(tileY, tileX);
+    //right or left click (right click for erasing)
+    if(event.button === 0){
+        clicking = true;
+        updateTile(tileY, tileX, selectedTile);
+    }
+    else if(event.button === 2){
+        updateTile(tileY, tileX, 0);
+        rightClicking = true;
+    }
+    
     redrawCanvas();
 })
 
 cvs.addEventListener('mouseup', function(){
     clicking = false;
+    rightClicking = false;
 })
+
+cvs.addEventListener('contextmenu', function(event){
+    if(!ctxMenuAllowed){
+        event.preventDefault();
+    }
+});
 
 document.addEventListener("keydown", (event) => {
     if(event.key == "="){
@@ -187,5 +156,65 @@ document.addEventListener("keydown", (event) => {
         rescale();
     }
 });
+
+document.getElementById("imageUpload").addEventListener("change", function(event){
+    const file = event.target.files[0];
+
+    if(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = function (e) {
+                addNewTile(img);
+            };
+
+            img.src = e.target.result;
+        }
+
+        reader.readAsDataURL(file);
+    }
+});
+
+function clickUpload(){
+    document.getElementById("imageUpload").click(); // Open file picker
+}
+
+function addNewTile(image){
+    tileSelectorArray.push({
+        element: document.createElement("div"),
+        img: image,
+    })
+
+    const tileIndex = tileSelectorArray.length - 1;
+
+    tileSelectorArray[tileIndex].element.classList.add("tile");
+
+    tileSelectorArray[tileIndex].element.addEventListener("click", function(){
+        select(tileIndex);
+    });
+
+
+    tileSelectorArray[tileIndex].element.innerHTML = "<img src='" + tileSelectorArray[tileIndex].img.src + "'>";
+
+    tileSelector.appendChild(tileSelectorArray[tileIndex].element);
+}
+
+function select(i){
+    tileSelectorArray[selectedTile].element.classList.remove("selected");
+    tileSelectorArray[i].element.classList.add("selected");
+
+    selectedTile = i;
+}
+
+//Init canvas
+resize(); //resize canvas based on user's screen dimensions
+tileArray = new Array(cvs.height / tileSize.y); //create tile array (how ever many tiles fit within the user's canvas dimensions)
+createCanvas(); //initialize tiles array
+
+//Init transparent tile
+let transparentImg = new Image();
+transparentImg.src = "sampleImgs/transparentbg.png";
+addNewTile(transparentImg);
+select(0);
 
 redrawCanvas();

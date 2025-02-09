@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Tile Editor</title>
+    <link rel="icon" type="image/x-icon" href="pointerLogo.ico">
+    <title>TileStudio</title>
 </head>
 <body>
     <header>
         <h1>TileStudio</h1>
-    </header>
+        </header>
     <section id="UIScreen">
         <div id="canvasContainer">
             <canvas id="mainCanvas">
@@ -18,17 +19,36 @@
         </div>
 
         <div id="tileSelectorSidebar">
-            <h2>Tiles</h2>
+            <div>
+                <h2 style="display: inline-block">Tiles</h2>
+                <div id="uploadButton" class="optionButton" onclick="clickUpload()">
+                    <img src="sampleImgs/add.png">
+                </div>
+                <input style="display: none;" type="file" id="imageUpload" accept="image/*">
+            </div>
             <div id="tileSelectorContainer">
                 <div id="tileSelector">
                 
                 </div>
             </div>
+            <div>
+                <div id="uploadSheetButton" class="optionButton">
+                    <img src="sampleImgs/uploadtileset.png">
+                </div>
+                <div id="downloadSheetButton" class="optionButton">
+                    <img src="sampleImgs/downloadtileset.png">
+                </div>
+                <div id="downloadImage" class="optionButton">
+                    <img src="sampleImgs/downloadImage.png">
+                </div>
+                <input style="display: none;" type="file" id="uploadSheet" accept="image/*">
+                <input style="display: none;" type="file" id="downloadSheet" accept="image/*">
+            </div>
         </div>
     </section>
 
     <footer>
-        <p style="display: inline-block;">© Lucus Mulhorn 2025 - Ver 0802250112</p>
+        <p style="display: inline-block;">© wickingpedia 2025 - Ver 0802252011</p>
         <p id="scaleDisplay" style="float:right;">Scale = 1.0</p>
     </footer>
     <script src="script.js"></script>

@@ -37,7 +37,7 @@ footer{
 
 #canvasContainer{
     flex-grow: 1;
-    overflow: scroll;
+    overflow: auto;
     position: relative;
 }
 
@@ -74,6 +74,10 @@ footer{
     font-size: 0;
 }
 
+#uploadButton{
+    float: right;
+}
+
 .tile{
     display: inline-block;
     width: 32px;
@@ -100,7 +104,26 @@ footer{
     box-sizing: border-box;
 }
 
-.tile:active{
+.tile:active {
     filter: brightness(200%);
     border: 3px solid white;
 }
+
+.optionButton{
+    overflow: hidden; 
+    width: 32px;
+    height: 32px;   
+    margin: 3px;
+    display: inline-block;
+}
+
+.optionButton:hover{
+    cursor: pointer;
+}
+
+.optionButton > img:active{
+    width: 30px;
+    padding-top: 2px;
+    padding-left: 2px;
+}
+
