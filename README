@@ -7,6 +7,8 @@ When user opens the app, they are given a blank canvas with a tile selector to t
 tile. Currently, the default size for tiles is 16x16 pixels, but users will be given the option to change the size of tiles in the future. They can select a tile to draw with, and click
 and drag within the canvas area to draw their tiles. They can zoom in and out using the scroll wheel or by pressing the + or - keys.
 
+You can find sample tiles to download and use in the sampleTiles directory.
+
 PLANNED FEATURES:
 -tile size changing
 -metatiles (larger objects made up of smaller tiles)
