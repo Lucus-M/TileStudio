@@ -49,10 +49,10 @@ footer{
     position: absolute;
 }
 
-#tileSelectorSidebar{
+.tileSelectorSidebar{
     background-color:rgb(20, 20, 37);
     margin-left: auto;
-    width: 20em;
+    width: 13.5em;
     height: 100%;
     display: flex;
     flex-flow: column;
@@ -127,3 +127,22 @@ footer{
     padding-left: 2px;
 }
 
+.toolSelection{
+    border: 2px solid white;
+    border-radius: 2px;
+    padding: 2px;
+    margin: 5px;
+}
+
+.toolSelection > p{
+    float: right;
+}
+
+.toolSelection:hover{
+    background-color: rgb(35, 35, 61);
+}
+
+.toolSelection.selected{
+    background-color: rgb(35, 35, 61);
+    border-color: yellow;
+}

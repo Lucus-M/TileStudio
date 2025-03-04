@@ -12,13 +12,49 @@
         <h1>TileStudio</h1>
         </header>
     <section id="UIScreen">
+        <div class="tileSelectorSidebar" id="tools" style="visibility: hidden;">
+            <div id="toolSelectorContainer">
+                <div>
+                    <h2 style="display: inline-block">Tools</h2>
+                </div>
+
+                <div class="toolSelection">
+                    <img src="sampleImgs/pencil.png">
+                    <p>Pencil</p>
+                </div>
+                <div class="toolSelection">
+                    <img src="sampleImgs/brush.png">
+                    <p>Brush</p>
+                </div>
+                <div class="toolSelection">
+                    <img src="sampleImgs/bucket.png">
+                    <p>Fill Bucket</p>
+                </div>
+                <div class="toolSelection">
+                    <img src="sampleImgs/rectangle.png">
+                    <p>Rectangle</p>
+                </div>
+                <div class="toolSelection">
+                    <img src="sampleImgs/elipse.png">
+                    <p>Elipse</p>
+                </div>
+                <div class="toolSelection">
+                    <img src="sampleImgs/trash.png">
+                    <p>Delete</p>
+                </div>
+            </div>
+        </div>
+
+
         <div id="canvasContainer">
             <canvas id="mainCanvas">
 
             </canvas>
         </div>
 
-        <div id="tileSelectorSidebar">
+        
+
+        <div class="tileSelectorSidebar" id="tileset">
             <div>
                 <h2 style="display: inline-block">Tiles</h2>
                 <div id="uploadButton" class="optionButton" onclick="clickUpload()">
@@ -45,12 +81,15 @@
                 <input style="display: none;" type="file" id="downloadSheet" accept="image/*">
             </div>
         </div>
+
+        
     </section>
 
     <footer>
-        <p style="display: inline-block;">© wickingpedia 2025 - Ver 0802252011</p>
+        <p style="display: inline-block;">© Lucus M, 2025 - Ver 0802252011</p>
         <p id="scaleDisplay" style="float:right;">Scale = 1.0</p>
     </footer>
     <script src="script.js"></script>
+    <script src="eventListeners.js"></script>
 </body>
 </html>

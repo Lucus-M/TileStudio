@@ -3,3 +3,5 @@ ver 0802251302, 2/8/2025 1:02PM
 	-added scaling
 ver 0802252011, 2/8/2025 8:11PM
 	-added support for uploading custom tiles
+ver 0802252011b, 3/4/2025 6:47AM
+	-updated scaling to support scroll wheel

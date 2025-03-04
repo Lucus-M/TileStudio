@@ -11,6 +11,8 @@ let tileSize = {
     y: 16 //height
 }
 
+let selectedTool = "pencil";
+
 let scale = 1; //zoom scale
 
 let tileSelectorArray = []; //array of selectable tiles, contains image and DOM element
@@ -27,7 +29,6 @@ let tileArray,      // 2d array of tiles
     
 //resize canvas based on user's screen dimensions
 function resize(){
-
     //cet canvas container element's dimensions
     let containerWidth = document.getElementById("canvasContainer").offsetWidth;
     let containerHeight = document.getElementById("canvasContainer").offsetHeight;
@@ -76,29 +77,22 @@ function rescale(){
 }
 
 function updateMousePos(event){
-    const cvsy = cvs.getBoundingClientRect().y;
-    const cvsx = cvs.getBoundingClientRect().x;
+    const prevtileY = tileY;
+    const prevtileX = tileX;
+
+    let cvsBoundingRect = cvs.getBoundingClientRect();
+
+    const cvsy = cvsBoundingRect.y;
+    const cvsx = cvsBoundingRect.x;
 
     const x = event.clientX;
     const y = event.clientY;
 
     tileX = Math.floor((x-cvsx)/(tileSize.x*scale));
     tileY = Math.floor((y-cvsy)/(tileSize.x*scale));
-}
 
-function updateTile(ty, tx, tileNum){
-    tileArray[ty][tx] = tileNum;
-}
-
-cvs.addEventListener('mousemove', (event) => {
-    const prevtileY = tileY;
-    const prevtileX = tileX;
-
-    updateMousePos(event);
-
+    
     if(!((prevtileX === tileX) && (prevtileY === tileY))){
-        console.log(tileX + " " + tileY);
-
         //click and drag draw
         if(clicking){
             updateTile(tileY, tileX, selectedTile);
@@ -119,61 +113,13 @@ cvs.addEventListener('mousemove', (event) => {
         ctx.rect(tileX*tileSize.x*scale, tileY*tileSize.y*scale, tileSize.x*scale, tileSize.y*scale);
         ctx.stroke();
     }
-});
+}
 
-cvs.addEventListener('mousedown', (event) => {
-    //right or left click (right click for erasing)
-    if(event.button === 0){
-        clicking = true;
-        updateTile(tileY, tileX, selectedTile);
+function updateTile(ty, tx, tileNum){
+    if(ty >= 0 && ty < tileArray.length && tx >= 0 && tx < tileArray[0].length){
+        tileArray[ty][tx] = tileNum;
     }
-    else if(event.button === 2){
-        updateTile(tileY, tileX, 0);
-        rightClicking = true;
-    }
-    
-    redrawCanvas();
-})
-
-cvs.addEventListener('mouseup', function(){
-    clicking = false;
-    rightClicking = false;
-})
-
-cvs.addEventListener('contextmenu', function(event){
-    if(!ctxMenuAllowed){
-        event.preventDefault();
-    }
-});
-
-document.addEventListener("keydown", (event) => {
-    if(event.key == "="){
-        scale += 0.1;
-        rescale();
-    }
-    if(event.key == "-"){
-        scale -= 0.1;
-        rescale();
-    }
-});
-
-document.getElementById("imageUpload").addEventListener("change", function(event){
-    const file = event.target.files[0];
-
-    if(file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const img = new Image();
-            img.onload = function (e) {
-                addNewTile(img);
-            };
-
-            img.src = e.target.result;
-        }
-
-        reader.readAsDataURL(file);
-    }
-});
+}
 
 function clickUpload(){
     document.getElementById("imageUpload").click(); // Open file picker
@@ -185,36 +131,46 @@ function addNewTile(image){
         img: image,
     })
 
-    const tileIndex = tileSelectorArray.length - 1;
+    //newest tile
+    const cur = tileSelectorArray.length - 1;
 
-    tileSelectorArray[tileIndex].element.classList.add("tile");
+    //add tile to tile selector array
+    tileSelectorArray[cur].element.classList.add("tile");
 
-    tileSelectorArray[tileIndex].element.addEventListener("click", function(){
-        select(tileIndex);
+    //add clicking event listener to tile selection
+    tileSelectorArray[cur].element.addEventListener("click", function(){
+        selectTile(cur);
     });
 
-
-    tileSelectorArray[tileIndex].element.innerHTML = "<img src='" + tileSelectorArray[tileIndex].img.src + "'>";
-
-    tileSelector.appendChild(tileSelectorArray[tileIndex].element);
+    tileSelectorArray[cur].element.innerHTML = "<img src='" + tileSelectorArray[cur].img.src + "'>";
+    tileSelector.appendChild(tileSelectorArray[cur].element);
 }
 
-function select(i){
+function selectTile(i){
     tileSelectorArray[selectedTile].element.classList.remove("selected");
     tileSelectorArray[i].element.classList.add("selected");
 
     selectedTile = i;
 }
 
-//Init canvas
-resize(); //resize canvas based on user's screen dimensions
-tileArray = new Array(cvs.height / tileSize.y); //create tile array (how ever many tiles fit within the user's canvas dimensions)
-createCanvas(); //initialize tiles array
+function selectTool(tool){
+    selectedTool = tool;
+    
+}
 
-//Init transparent tile
-let transparentImg = new Image();
-transparentImg.src = "sampleImgs/transparentbg.png";
-addNewTile(transparentImg);
-select(0);
+function initUI(){
+    //Init canvas
+    resize(); //resize canvas based on user's screen dimensions
+    tileArray = new Array(cvs.height / tileSize.y); //create tile array (how ever many tiles fit within the user's canvas dimensions)
+    createCanvas(); //initialize tiles array
 
-redrawCanvas();
+    //Init transparent tile
+    let transparentImg = new Image();
+    transparentImg.src = "sampleImgs/transparentbg.png";
+    addNewTile(transparentImg);
+    selectTile(0);
+
+    redrawCanvas();
+}
+
+initUI();
